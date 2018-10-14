@@ -16,6 +16,7 @@
   It also provides a GUI to move the simulated robot around "manually".
   This corresponds to moving around the real robot without the use of MoveIt.
   -->
+  <arg name="rviz_tutorial" default="false" />
   <arg name="use_gui" default="false" />
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
@@ -46,6 +47,7 @@
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
   <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="rviz_tutorial" value="$(arg rviz_tutorial)"/>
     <arg name="config" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>

@@ -27,37 +27,35 @@ int main(int argc, char** argv)
   moveit_visual_tools::MoveItVisualTools visual_tools("panda_link0");
   visual_tools.deleteAllMarkers();
   visual_tools.loadRemoteControl();
+
   Eigen::Affine3d text_pose = Eigen::Affine3d::Identity();
   text_pose.translation().z() = 1.0;
-  visual_tools.publishText(text_pose, "Path Constraint", rvt::WHITE, rvt::XLARGE);
+  visual_tools.publishText(text_pose, "Joint Constraint", rvt::WHITE, rvt::XLARGE);
   
   move_group.setNamedTarget("home");
-  moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-  bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  moveit::planning_interface::MoveGroupInterface::Plan home_plan;
+  bool home_success = (move_group.plan(home_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   move_group.move();
 
   visual_tools.prompt("move to pose that satisfy constraints");
-  geometry_msgs::PoseStamped constrainted_pose = move_group.getCurrentPose("panda_link7");
-  constrainted_pose.pose.orientation.w = 1.0;
-  constrainted_pose.pose.position.x = -0.1;
-  constrainted_pose.pose.position.y = 0.4;
-  constrainted_pose.pose.position.z = 0.9;
-  move_group.setPoseTarget(constrainted_pose);
-  moveit::planning_interface::MoveGroupInterface::Plan constrainted_plan;
-  bool constrainted_success = (move_group.plan(constrainted_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+  moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
+  std::vector<double> joint_group_positions;
+  current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
+  joint_group_positions[2] = 0.57;  // radians
+  move_group.setJointValueTarget(joint_group_positions);
+  moveit::planning_interface::MoveGroupInterface::Plan joint_plan;
+  bool joint_success = (move_group.plan(joint_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   move_group.move();
 
-  visual_tools.prompt("press next to plan and move to constrainted pose");
-  moveit_msgs::OrientationConstraint ocm;
-  ocm.link_name = "panda_link7";
-  ocm.header.frame_id = "panda_link0";
-  ocm.orientation.w = 1;
-  ocm.absolute_x_axis_tolerance = 0.1;
-  ocm.absolute_y_axis_tolerance = 0.1;
-  ocm.absolute_z_axis_tolerance = 0.1;
-  ocm.weight = 1.0;
+  visual_tools.prompt("press next to plan and move to constrainted joint");
+  moveit_msgs::JointConstraint jc;
+  jc.joint_name = "panda_joint3";
+  jc.position = 0.57;
+  jc.tolerance_above = 0.1;
+  jc.tolerance_below = 0.1;
+  jc.weight = 1;
   moveit_msgs::Constraints constraints;
-  constraints.orientation_constraints.push_back(ocm);
+  constraints.joint_constraints.push_back(jc);
   move_group.setPathConstraints(constraints);
 
   geometry_msgs::Pose target_pose;
@@ -66,7 +64,7 @@ int main(int argc, char** argv)
   target_pose.position.y = -0.1;
   target_pose.position.z = 0.9;
   move_group.setPoseTarget(target_pose);
-  move_group.setPlanningTime(20.0);
+  move_group.setPlanningTime(10.0);
   moveit::planning_interface::MoveGroupInterface::Plan target_plan;
   bool target_success = (move_group.plan(target_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   move_group.move();
