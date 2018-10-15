@@ -48,17 +48,21 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(mymoveit1 src/mymoveit1.cpp)
-target_link_libraries(mymoveit1 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_executable(mymoveit2 src/mymoveit2.cpp)
-target_link_libraries(mymoveit2 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_executable(mymoveit3 src/mymoveit3.cpp)
-target_link_libraries(mymoveit3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_executable(mymoveit4 src/mymoveit4.cpp)
-target_link_libraries(mymoveit4 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_executable(mymoveit5 src/mymoveit5.cpp)
-target_link_libraries(mymoveit5 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(mymoveit_joint_constraint src/mymoveit_joint_constraint.cpp)
+target_link_libraries(mymoveit_joint_constraint ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
-install(TARGETS mymoveit1 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-install(TARGETS mymoveit2 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-install(TARGETS mymoveit3 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+add_executable(mymoveit_path_constraint src/mymoveit_path_constraint.cpp)
+target_link_libraries(mymoveit_path_constraint ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(mymoveit_orientation_constraint src/mymoveit_orientation_constraint.cpp)
+target_link_libraries(mymoveit_orientation_constraint ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(mymoveit_no_constraint src/mymoveit_no_constraint.cpp)
+target_link_libraries(mymoveit_no_constraint ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(mymoveit_visual_tools src/mymoveit_visual_tools.cpp)
+target_link_libraries(mymoveit_visual_tools ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+#install(TARGETS mymoveit1 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+#install(TARGETS mymoveit2 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+#install(TARGETS mymoveit3 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
