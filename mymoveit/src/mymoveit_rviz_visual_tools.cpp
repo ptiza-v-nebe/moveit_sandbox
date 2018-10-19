@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   visual_tools_.reset(new rvt::RvizVisualTools("world", "/rviz_visual_tools"));
   visual_tools_->loadMarkerPub();  // create publisher before waiting
 
-  ROS_INFO("Sleeping 5 seconds before running demo");
+  ROS_INFO("Drawing shapes and colors");
   //ros::Duration(5.0).sleep();
 
   // Clear previos messages
@@ -170,10 +170,83 @@ int main(int argc, char** argv)
   visual_tools_->trigger();
 
   //publish graph
-  Eigen::Affine3d graph_pose = Eigen::Affine3d::Identity();
-  graph_pose.translation().y() = 1.2;
+  Eigen::Affine3d graph_pose = Eigen::Affine3d::Identity();  
   graph_msgs::GeometryGraph graph;
+  graph_msgs::Edges edge;
 
+  //it1
+  graph_pose.translation().y() = 1.6;
+  graph.nodes.push_back(visual_tools_->convertPose(graph_pose).position);
+  graph.edges.push_back(edge);
+  edge.node_ids.clear();
+
+  //it2
+  graph_pose.translation().x() += 0.1;
+  graph_pose.translation().z() += 0.1;
+  graph.nodes.push_back(visual_tools_->convertPose(graph_pose).position);
+  edge.node_ids.push_back(0);
+  graph.edges.push_back(edge);
+  edge.node_ids.clear();
+
+  //it3
+  graph_pose.translation().x() += 0.3;
+  graph_pose.translation().z() += 0.1;
+  graph.nodes.push_back(visual_tools_->convertPose(graph_pose).position);
+  edge.node_ids.push_back(1);
+  graph.edges.push_back(edge);
+  edge.node_ids.clear();
+
+  //it4
+  graph_pose.translation().x() += 0.1;
+  graph_pose.translation().y() += 0.1;
+  graph_pose.translation().z() += 0.2;
+  graph.nodes.push_back(visual_tools_->convertPose(graph_pose).position);
+  edge.node_ids.push_back(1);
+  graph.edges.push_back(edge);
+  edge.node_ids.clear();
+
+  //it5
+  graph_pose.translation().x() += 0.2;
+  graph_pose.translation().y() += 0.1;
+  graph.nodes.push_back(visual_tools_->convertPose(graph_pose).position);
+  edge.node_ids.push_back(0);
+  edge.node_ids.push_back(1);
+  edge.node_ids.push_back(2);
+  graph.edges.push_back(edge);
+  edge.node_ids.clear();
+  
+  visual_tools_->publishGraph(graph, rvt::ORANGE, 0.005);
+  visual_tools_->trigger();
+
+  //publish path
+  Eigen::Affine3d path_pose = Eigen::Affine3d::Identity();
+  EigenSTL::vector_Vector3d path;
+  std::vector<rviz_visual_tools::colors> colors;
+
+  colors.push_back(rviz_visual_tools::RED);
+  path.emplace_back(path_pose.translation());
+
+  path_pose.translation().y() += -0.3;
+  path_pose.translation().x() += -0.5;
+  path_pose.translation().z() += 0.5;
+  colors.push_back(rviz_visual_tools::RED);
+  path.emplace_back(path_pose.translation());
+
+  path_pose.translation().y() += -0.1;
+  path_pose.translation().x() += -0.4;
+  path_pose.translation().z() += -0.1;
+  colors.push_back(rviz_visual_tools::GREEN);
+  path.emplace_back(path_pose.translation());
+
+  path_pose.translation().y() += -0.5;
+  path_pose.translation().x() += -0.1;
+  path_pose.translation().z() += 0.15;
+  colors.push_back(rviz_visual_tools::BLUE);
+  path.emplace_back(path_pose.translation());
+
+  visual_tools_->publishPath(path, colors);
+  visual_tools_->trigger();
+  
   ROS_INFO_STREAM("Shutting down.");
   ros::shutdown();
 
