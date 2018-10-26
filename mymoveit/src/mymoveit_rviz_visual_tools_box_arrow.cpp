@@ -14,7 +14,6 @@ namespace rvt = rviz_visual_tools;
 
 int main(int argc, char** argv)
 {
-
   //init ros
   ros::init(argc, argv, "visual_tools_demo");
   ROS_INFO_STREAM("Visual Tools Demo");
@@ -48,7 +47,8 @@ int main(int argc, char** argv)
   visual_tools_->publishWireframeCuboid(wcuboid_pose, 0.3, 0.3, 0.1);
   visual_tools_->trigger(); 
 
-  //publish arbitrary arrow
+  //1. publish arbitrary arrow (not working properly, you have to estimate the final pose)
+       //another point: axis angle and rotation() for some reason do not work properly in moveit and rviz
   Eigen::Affine3d arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() += 0.15;
   arrow_pose.translation().y() += 0.15;
@@ -57,35 +57,37 @@ int main(int argc, char** argv)
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::RED, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
-
-
-  //publish arbitrary arrow
-
-  /* Eigen::Quaterniond quat(Eigen::AngleAxisd(M_PI/numOfSteps,Eigen::Vector3d(0,1,1)));
-  for(int i=0; i < 15; i++){
-    visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
-    arrow_pose.rotate(quat);
-  }*/
+  //2. publish arbitrary arrow
   arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() += 0.15;
   arrow_pose.translation().y() += 0.15;
   arrow_pose.translation().z() += 0.05;
-  
-  int numOfSteps = 10;
-  Eigen::Quaterniond quat(Eigen::AngleAxisd(-M_PI/2.0, Eigen::Vector3d(1,1,0))); //rotate around zy
-  arrow_pose.rotate(quat);
+  //Eigen::Quaterniond rot;
+  //rot.setFromTwoVectors(Eigen::Vector3d(1,0,0),Eigen::Vector3d(1,1,1));
+  Eigen::Quaterniond rot = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d(1,0,0),Eigen::Vector3d(1,1,1));
+  arrow_pose.rotate(rot);
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
-  //publish arbitrary arrow
+  //3. publish arbitrary arrow
   arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() -= 0.15;
   arrow_pose.translation().y() += 0.15;
   arrow_pose.translation().z() -= 0.05;
   
-  numOfSteps = 10;
-  quat = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI/numOfSteps * 6,Eigen::Vector3d(0,1,1))); //rotate around zy
+  Eigen::Quaterniond quat = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI/10 * 6,Eigen::Vector3d(0,1,1))); //rotate around zy
   arrow_pose.rotate(quat);
+  visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
+  visual_tools_->trigger();
+
+  //4. publish arbitrary arrow
+  arrow_pose = Eigen::Affine3d::Identity();
+  arrow_pose.translation().x() -= 0.15;
+  arrow_pose.translation().y() += 0.15;
+  arrow_pose.translation().z() += 0.05;
+  rot = Eigen::Quaterniond::Identity();
+  rot = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d(1,0,0),Eigen::Vector3d(-1,1,1));
+  arrow_pose.rotate(rot);
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
