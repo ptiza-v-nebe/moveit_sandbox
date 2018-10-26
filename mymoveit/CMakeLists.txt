@@ -66,6 +66,10 @@ target_link_libraries(mymoveit_visual_tools ${catkin_LIBRARIES} ${Boost_LIBRARIE
 add_executable(mymoveit_rviz_visual_tools src/mymoveit_rviz_visual_tools.cpp)
 target_link_libraries(mymoveit_rviz_visual_tools ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(mymoveit_rviz_visual_tools_box_arrow src/mymoveit_rviz_visual_tools_box_arrow.cpp)
+target_link_libraries(mymoveit_rviz_visual_tools_box_arrow ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+
 #install(TARGETS mymoveit1 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 #install(TARGETS mymoveit2 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 #install(TARGETS mymoveit3 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
