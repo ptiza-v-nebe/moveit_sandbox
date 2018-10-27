@@ -37,11 +37,18 @@ int main(int argc, char** argv)
   move_group.move();
 
   visual_tools.prompt("move to pose that satisfy constraints");
+  
+
+
   geometry_msgs::PoseStamped constrainted_pose = move_group.getCurrentPose("panda_link7");
-  constrainted_pose.pose.orientation.w = 1.0;
+  tf::Quaternion q_rot = tf::createQuaternionFromRPY(3.14159265359, 0, 0);
+  tf::Vector3 vec3(1,0,0);
+  q_rot.setRotation(vec3,0.0);
+  quaternionTFToMsg(q_rot, constrainted_pose.pose.orientation);
+  //constrainted_pose.pose.orientation.w = 1.0;
   constrainted_pose.pose.position.x = -0.1;
   constrainted_pose.pose.position.y = 0.4;
-  constrainted_pose.pose.position.z = 0.9;
+  constrainted_pose.pose.position.z = 0.6;
   move_group.setPoseTarget(constrainted_pose);
   moveit::planning_interface::MoveGroupInterface::Plan constrainted_plan;
   bool constrainted_success = (move_group.plan(constrainted_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
@@ -53,8 +60,8 @@ int main(int argc, char** argv)
   ocm.header.frame_id = "panda_link0";
   ocm.orientation.w = 1;
   ocm.absolute_x_axis_tolerance = 0.1;
-  ocm.absolute_y_axis_tolerance = 0.1;
-  ocm.absolute_z_axis_tolerance = 0.1;
+  ocm.absolute_y_axis_tolerance = 1.0;
+  ocm.absolute_z_axis_tolerance = 1.0;
   ocm.weight = 1.0;
   moveit_msgs::Constraints constraints;
   constraints.orientation_constraints.push_back(ocm);
@@ -70,6 +77,8 @@ int main(int argc, char** argv)
   moveit::planning_interface::MoveGroupInterface::Plan target_plan;
   bool target_success = (move_group.plan(target_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
   move_group.move();
+  move_group.clearPathConstraints();
+}
 
   ros::shutdown();
   return 0;

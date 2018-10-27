@@ -57,7 +57,7 @@ int main(int argc, char** argv)
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::RED, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
-  //2. publish arbitrary arrow
+  //2. publish arbitrary arrow (best controllable result for rotating is using two vectors and get rotation quat from them)
   arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() += 0.15;
   arrow_pose.translation().y() += 0.15;
@@ -69,25 +69,23 @@ int main(int argc, char** argv)
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
-  //3. publish arbitrary arrow
+  //3. publish arbitrary arrow (conversion from axis angle two quat and then using it as rotation does the job well)
+       //there is still problem that you have to estimate your final pose
   arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() -= 0.15;
   arrow_pose.translation().y() += 0.15;
   arrow_pose.translation().z() -= 0.05;
-  
   Eigen::Quaterniond quat = Eigen::Quaterniond(Eigen::AngleAxisd(M_PI/10 * 6,Eigen::Vector3d(0,1,1))); //rotate around zy
   arrow_pose.rotate(quat);
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
-  //4. publish arbitrary arrow
+  //4. publish arbitrary arrow (Compact 1liner for rotation)
   arrow_pose = Eigen::Affine3d::Identity();
   arrow_pose.translation().x() -= 0.15;
   arrow_pose.translation().y() += 0.15;
   arrow_pose.translation().z() += 0.05;
-  rot = Eigen::Quaterniond::Identity();
-  rot = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d(1,0,0),Eigen::Vector3d(-1,1,1));
-  arrow_pose.rotate(rot);
+  arrow_pose.rotate(Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d(1,0,0),Eigen::Vector3d(-1,1,1)));
   visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   visual_tools_->trigger();
 
@@ -105,16 +103,14 @@ int main(int argc, char** argv)
     visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   }*/
   
+  /*
   //properly rotating, all arrows has defined angle space without any weird things
-  /*int numOfSteps = 10;
-   Eigen::Quaterniond quat(Eigen::AngleAxisd(M_PI/numOfSteps,Eigen::Vector3d(0,1,1)));
+  int numOfSteps = 10;
+  Eigen::Quaterniond quat(Eigen::AngleAxisd(M_PI/numOfSteps,Eigen::Vector3d(0,1,1)));
   for(int i=0; i < 15; i++){
     visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
     arrow_pose.rotate(quat);
   }*/
-  
-  //Eigen::Quaterniond quat(Eigen::AngleAxisd(M_PI/10.0 * 6,Eigen::Vector3d(0,1,1)));
-  //arrow_pose.rotate(quat);
 
   /*
   //Does weird things, the angle spaces are not equal after some point
@@ -124,9 +120,6 @@ int main(int argc, char** argv)
     arrow_pose.rotate(angleaxis);
     visual_tools_->publishArrow(arrow_pose, rviz_visual_tools::GREEN, rviz_visual_tools::MEDIUM);
   }*/
-
-   
-  //ROS_INFO_STREAM("some quat" << quat.vec());
   
   ROS_INFO_STREAM("Shutting down.");
   ros::shutdown();

@@ -42,6 +42,7 @@ int main(int argc, char** argv)
   std::vector<double> joint_group_positions;
   current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
   joint_group_positions[2] = 0.57;  // radians
+  joint_group_positions[3] = 0.57;
   move_group.setJointValueTarget(joint_group_positions);
   moveit::planning_interface::MoveGroupInterface::Plan joint_plan;
   bool joint_success = (move_group.plan(joint_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
@@ -49,12 +50,12 @@ int main(int argc, char** argv)
 
   visual_tools.prompt("press next to plan and move to constrainted joint");
   moveit_msgs::JointConstraint jc;
+  moveit_msgs::Constraints constraints;
   jc.joint_name = "panda_joint3";
   jc.position = 0.57;
   jc.tolerance_above = 0.1;
   jc.tolerance_below = 0.1;
   jc.weight = 1;
-  moveit_msgs::Constraints constraints;
   constraints.joint_constraints.push_back(jc);
   move_group.setPathConstraints(constraints);
 
